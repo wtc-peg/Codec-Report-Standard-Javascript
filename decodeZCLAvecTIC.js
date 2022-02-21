@@ -16,12 +16,18 @@
  *
  *     node decodeZCL.js 125 110A04020000290998
  *     node decodeZCL.js 125 1101800F80000041170064271080031B5800A000A00136000003E84E20901407
+ *
+ * You could also set the three following lines commented to implement you own Decoder(...) function calls...
+ *
  */
  
- /*
- 
+var argv= process.argv.slice(2);
+obj = Decoder(Buffer.from(argv[1],'hex'),parseInt(argv[0], 10 ));
+console.dir(obj,{depth:null});
 
- This version is a "really preliminary Beta version" allowing to decode "all Tele infromationb Client possible fields comminf from TICs'0 sensor
+/*
+ *
+ The decodeZCLAvecTIC.js version is a "really preliminary Beta version" allowing to decode "all Tele infromationb Client possible fields comminf from TICs'0 sensor
  fell Free to try and debug ...
 
  Please make returns to : pe.goudet@watteco.com
@@ -43,12 +49,6 @@
  
  *
  */ 
-
-
-var argv= process.argv.slice(2);
-obj = Decoder(Buffer.from(argv[1],'hex'),parseInt(argv[0], 10 ));
-console.dir(obj,{depth:null});
-
 
 // ----------------------------------------------------------------
 // ----------------------- FUNCTIONS PART (Deprecated) ------------
@@ -1718,8 +1718,6 @@ function Decoder(bytes, port) {
 			decoded.batch.report = "batch";
 		}
 	}
-
   return decoded;
 }
-
 
