@@ -1133,6 +1133,8 @@ function Decoder(bytes, port) {
 				if (  (clusterdID === 0x0013 ) & (attributID === 0x0055)) decoded.data.value = bytes[index];
 				// on/off present value
 				if (  (clusterdID === 0x0006 ) & (attributID === 0x0000)) {state = bytes[index]; if(state === 1) decoded.data.state = "ON"; else decoded.data.state = "OFF" ; }
+			        //differential pressure
+				if (  (clusterdID === 0x8008 ) & (attributID === 0x0000)) decoded.data.differential_pressure =bytes[index]*256+bytes[index+1];
 				// multibinary input present value
 				if (  (clusterdID === 0x8005 ) & (attributID === 0x0000)) 
 				{
@@ -1157,7 +1159,7 @@ function Decoder(bytes, port) {
 					decoded.data.modbus_payload = "";
 					decoded.data.size = bytes[index]; 
 					decoded.data.modbus_float = 0; // 0: pas de décodage float 1: décodage float 2: décodage float 2word inversé
-					for( var j = 0; j < decoded.data.size -1; j++ )
+					for( var j = 0; j < decoded.data.size; j++ )
 					{
 						
 						temp_hex_str   = bytes[index+j+1].toString( 16 ).toUpperCase( );

@@ -624,6 +624,57 @@ function Decoder(bytes, port) {
 					);
 				}
 				
+				//XYZ Acceleration : Last on XYZ
+				if (  (clusterdID === 0x800f) ) {
+					i = index+1;
+					if (attributID === 0x0000) {
+						o = decoded.data.Last = {};
+						o.NbTriggedAcq = BytesToInt64(bytes,i,"U32"); i+=4;
+						o.Mean_X_G = BytesToInt64(bytes,i,"U16")/100.0; i+=2;
+						o.Max_X_G  = BytesToInt64(bytes,i,"U16")/100.0; i+=2;
+						o.Dt_X_ms  = BytesToInt64(bytes,i,"U16"); i+=2;
+						o.Mean_Y_G = BytesToInt64(bytes,i,"U16")/100.0; i+=2;
+						o.Max_Y_G  = BytesToInt64(bytes,i,"U16")/100.0; i+=2;
+						o.Dt_Y_ms  = BytesToInt64(bytes,i,"U16"); i+=2;
+						o.Mean_Z_G = BytesToInt64(bytes,i,"U16")/100.0; i+=2;
+						o.Max_Z_G  = BytesToInt64(bytes,i,"U16")/100.0; i+=2;
+						o.Dt_Z_ms  = BytesToInt64(bytes,i,"U16"); 
+					} else if (attributID === 0x0001 || (attributID === 0x0002) || (attributID === 0x0003)){
+						ext = (attributID === 0x0001 ? "Stats_X" : (attributID === 0x0002 ? "Stats_Y" : "Stats_Z"));
+						o = decoded.data[ext] = {};
+						o.NbAcq     = BytesToInt64(bytes,i,"U16"); i+=2;
+						o.MinMean_G = BytesToInt64(bytes,i,"U16")/100.0; i+=2;
+						o.MinMax_G  = BytesToInt64(bytes,i,"U16")/100.0; i+=2;
+						o.MinDt     = BytesToInt64(bytes,i,"U16"); i+=2;
+						o.MeanMean_G= BytesToInt64(bytes,i,"U16")/100.0; i+=2;
+						o.MeanMax_G = BytesToInt64(bytes,i,"U16")/100.0; i+=2;
+						o.MeanDt    = BytesToInt64(bytes,i,"U16"); i+=2;
+						o.MaxMean_G = BytesToInt64(bytes,i,"U16")/100.0; i+=2;
+						o.MaxMax_G  = BytesToInt64(bytes,i,"U16")/100.0; i+=2;
+						o.MaxDt     = BytesToInt64(bytes,i,"U16"); i+=2;
+					} else if (attributID === 0x8000) {
+						o = decoded.data.Params = {};
+						o.WaitFreq_Hz       = BytesToInt64(bytes,i,"U16")/10.0; i+=2;
+						o.AcqFreq_Hz        = BytesToInt64(bytes,i,"U16")/10.0; i+=2;
+						delay = BytesToInt64(bytes,i,"U16"); i+=2;
+						if (delay & 0x8000) delay = (delay & (~0x8000)) * 60;
+						o.NewWaitDelay_s    = (delay & 0x8000 ? delay = (delay & (~0x8000)) * 60 : delay);
+						o.MaxAcqDuration_ms = BytesToInt64(bytes,i,"U16"); i+=2;
+						o.Threshold_X_G     = BytesToInt64(bytes,i,"U16")/100.0; i+=2;
+						o.Threshold_Y_G     = BytesToInt64(bytes,i,"U16")/100.0; i+=2;
+						o.Threshold_Z_G     = BytesToInt64(bytes,i,"U16")/100.0; i+=2;
+						o.OverThrsh_Dt_ms   = BytesToInt64(bytes,i,"U16"); i+=2;
+						o.UnderThrsh_Dt_ms  = BytesToInt64(bytes,i,"U16"); i+=2;
+						o.Range_G           = BytesToInt64(bytes,i,"U16")/100; i+=2;
+						o.FilterSmoothCoef  = BytesToInt64(bytes,i,"U8"); i+=1;
+						o.FilterGainCoef    = BytesToInt64(bytes,i,"U8"); i+=1;
+						o = decoded.data.Params.WorkingModes = {};
+						o.SignalEachAcq     = (bytes[i] & 0x80 ? "true" : "false");
+						o.RstAftStdRpt_X    = (bytes[i] & 0x01 ? "true" : "false");
+						o.RstAftStdRpt_Y    = (bytes[i] & 0x02 ? "true" : "false");
+						o.RstAftStdRpt_7    = (bytes[i] & 0x04 ? "true" : "false");
+					}
+				}
 				
 			}
 		
